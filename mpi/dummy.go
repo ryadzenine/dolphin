@@ -10,7 +10,7 @@ type DummyMessagesQueue struct {
     capacity int
 }
 
-func (m *DummyMessagesQueue) Register(queue string, data interface{}){
+func (m *DummyMessagesQueue) Write(queue string, data interface{}){
     if _, ok:=m.queues[queue]; ok  {
         m.queues[queue].PushFront(data) 
     }else {
@@ -30,4 +30,8 @@ func (m *DummyMessagesQueue) ReadFirstAll() (data map[string]interface{}){
         data[key] = value.Front().Value;
     }
     return data
+}
+func NewDummyMessagesQueue(capacity int) (queue DummyMessagesQueue) {
+    queue = DummyMessagesQueue{make(map[string]*list.List), capacity}
+    return 
 }

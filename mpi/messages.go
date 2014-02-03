@@ -4,7 +4,7 @@ package mpi
 // an abstraction to messageQueues or caching technologies
 type MessagesQueue interface {
     // Register a message in the queue 
-    Write(string, interface {}) bool
+    Write(string, interface {})
     // Read the first message of 
     ReadFirst(string) interface{}
     // Returns the last message registred in every queue
