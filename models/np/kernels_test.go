@@ -1,4 +1,4 @@
-package estimators 
+package np;
 
 import (
     "testing"

@@ -2,10 +2,11 @@ package workers;
 
 import (
     "github.com/ryadzenine/dolphin/mpi"
-    "github.com/ryadzenine/dolphin/estimators"
+    "github.com/ryadzenine/dolphin/models/np"
 )
 
-func SimpleWorker(data_stream chan estimators.LearningPoint, est *estimators.RevezEstimator, queue mpi.MessagesQueue, tau int, name string){
+func SimpleWorker(data_stream chan np.LearningPoint, est *np.RevezEstimator,
+  queue mpi.MessagesQueue, tau int, name string){
     i := 1
     vc := make(map[string]int) // version control map 
     for{
@@ -20,9 +21,9 @@ func SimpleWorker(data_stream chan estimators.LearningPoint, est *estimators.Rev
             if i % tau == 0 {
                 stat := queue.ReadStates(vc)
                 // Block of code just to covert to the good types 
-                states:= make([]estimators.State, 0, len(stat))
+                states:= make([]np.State, 0, len(stat))
                 for _,v := range stat {
-                    states = append(states, v.(estimators.State))
+                    states = append(states, v.(np.State))
                 }
                 // We know append the knew versions 
                 for key,v := range stat {
@@ -30,7 +31,7 @@ func SimpleWorker(data_stream chan estimators.LearningPoint, est *estimators.Rev
                 }
                 acc := make([]float64, len(est.Points))
                 if len(states) != 0 {
-                    acc = estimators.States(states).ComputeAgregation()
+                    acc = np.States(states).ComputeAgregation()
                 }
                 est.ComputeDistributedStep(acc, data)
             }else{
