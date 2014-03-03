@@ -41,7 +41,7 @@ func (r *RevezEstimator) L2Error(testData []models.SLPoint) float64 {
     p, _ := r.Predict(v.X)
     err = err + (p-v.Y)*(p-v.Y)
   }
-  return math.Sqrt(err)
+  return math.Sqrt(err) / float64(len(testData))
 }
 func (r *RevezEstimator) Predict(p models.Point) (float64, error) {
   // first we seek the closest point
