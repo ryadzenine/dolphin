@@ -58,7 +58,7 @@ func (m CircularMPI) sendData(to_send map[string]Versionable) error {
   }
   var network bytes.Buffer
   enc := gob.NewEncoder(&network) // Will write to network.
-  gob.Register(Mock(1))
+  //  gob.Register(Mock(1))
   err := enc.Encode(to_send)
   if err != nil {
     return err
