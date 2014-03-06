@@ -46,7 +46,7 @@ func (r *RevezEstimator) L2Error(testData []models.SLPoint) float64 {
 func (r *RevezEstimator) Predict(p models.Point) (float64, error) {
   // first we seek the closest point
   for i, pt := range r.Points {
-    if l1Norm(pt, p) < r.Smoothing(0)*float64(len(pt))/2 {
+    if l1Norm(pt, p) == 0 {
       return r.state[i], nil
     }
   }
