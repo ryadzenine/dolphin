@@ -21,7 +21,7 @@ func (r EstimatorState) Version() int {
 
 type RegressionEstimator interface {
   Predict(models.Point) (float64, error)
-  ComputeDistributedStep(float64, models.SLPoint)
+  ComputeDistributedStep([]float64, models.SLPoint)
   ComputeStep(models.SLPoint)
   State() models.State
 }
