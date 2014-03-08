@@ -38,7 +38,9 @@ func SimpleWorker(data_stream chan models.SLPoint, est *np.RevezEstimator,
       } else {
         est.ComputeStep(data)
       }
-      queue.Write(name, est.State())
+      if j := i % tau; tau-j < 3 {
+        queue.Write(name, est.State())
+      }
       i = i + 1
     }
   }
