@@ -2,17 +2,15 @@ package workers
 
 import (
   "github.com/ryadzenine/dolphin/models"
-  "github.com/ryadzenine/dolphin/models/np"
   "github.com/ryadzenine/dolphin/mpi"
 )
 
-func SimpleWorker(data_stream chan models.SLPoint, est *np.RevezEstimator,
-  queue mpi.MessagesQueue, tau int, name string) {
+func SimpleWorker(queue mpi.MessagesQueue, cmpt Computable, tau int) {
   i := 1
   vc := make(map[string]int) // version control map
   for {
     select {
-    case data := <-data_stream:
+    case data := <-cmpt.Input:
       if i == 1 {
         for _, v := range queue.Queues() {
           vc[v] = 0
@@ -30,15 +28,15 @@ func SimpleWorker(data_stream chan models.SLPoint, est *np.RevezEstimator,
         for key, v := range stat {
           vc[key] = v.Version()
         }
-        acc := make([]float64, len(est.Points))
+        acc := make([]float64, len(cmpt.Est.Points))
         if len(states) != 0 {
           acc = models.States(states).ComputeAgregation()
         }
-        est.ComputeDistributedStep(acc, data)
+        cmpt.Est.ComputeDistributedStep(acc, data)
       } else {
-        est.ComputeStep(data)
+        cmpt.Est.ComputeStep(data)
       }
-      queue.Write(name, est.State())
+      queue.Write(cmpt.Name, cmpt.Est.State())
       i = i + 1
     }
   }
