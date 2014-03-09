@@ -12,7 +12,7 @@ import (
 )
 
 type CircularMPI struct {
-  *Dummy                   // the real data
+  Dummy                    // the real data
   locQueues map[string]int // The local queues
   pending   []string       // Represent the pending writes
   hosts     []string       // A liste of "ip:port" of the nodes involved in the ring
