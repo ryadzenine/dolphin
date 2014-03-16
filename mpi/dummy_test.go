@@ -1,7 +1,6 @@
 package mpi
 
 import "testing"
-import "container/list"
 
 type Mock int
 
@@ -9,10 +8,10 @@ func (i Mock) Version() int {
   return int(i)
 }
 func TestDummys(t *testing.T) {
-  mpi := Dummy{make(map[string]*list.List), 10}
+  mpi := Dummy(make(map[string]Versionable))
   mpi.Write("q1", Mock(5))
-  if name, ok := mpi.queues["q1"]; ok {
-    if name.Front().Value.(Mock) != 5 {
+  if name, ok := mpi["q1"]; ok {
+    if name.(Mock) != 5 {
       t.Error("Expected an element in the DummyQueue")
     }
   }

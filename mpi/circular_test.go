@@ -15,7 +15,7 @@ func TestNewCircularMPI(t *testing.T) {
     "localhost:10526",
     "localhost:10527"}
   logger := log.New(os.Stderr, "Job: ", log.Ldate)
-  mp := NewCircularMPI(5, me, hosts, logger)
+  mp := NewCircularMPI(me, hosts, logger)
   if mp.next != "localhost:10526" || mp.prev != "localhost:10527" {
     t.Error("Wrong next node in the ring")
   }
@@ -25,7 +25,7 @@ func TestNewCircularMPI(t *testing.T) {
     "localhost:10526",
     "localhost:10527"}
   logger = log.New(os.Stderr, "Job: ", log.Ldate)
-  mp = NewCircularMPI(5, me, hosts, logger)
+  mp = NewCircularMPI(me, hosts, logger)
   if mp.next != "localhost:10527" || mp.prev != "localhost:10525" {
     t.Error("Wrong next node in the ring")
   }
@@ -35,7 +35,7 @@ func TestNewCircularMPI(t *testing.T) {
     "localhost:10526",
     "localhost:10527"}
   logger = log.New(os.Stderr, "Job: ", log.Ldate)
-  mp = NewCircularMPI(5, me, hosts, logger)
+  mp = NewCircularMPI(me, hosts, logger)
   if mp.next != "localhost:10525" || mp.prev != "localhost:10526" {
     t.Error("Wrong next node in the ring")
   }
@@ -46,7 +46,7 @@ func buildMP(i int) *CircularMPI {
     "127.100.1.2:8081",
     "127.100.1.3:8082"}
   logger := log.New(os.Stderr, "Job: ", log.Ldate)
-  return NewCircularMPI(5, hosts[i], hosts, logger)
+  return NewCircularMPI(hosts[i], hosts, logger)
 }
 func TestRegister(t *testing.T) {
   mp := buildMP(1)
@@ -61,7 +61,7 @@ func TestWrite(t *testing.T) {
   mp1 := buildMP(1)
   mp1.Register("stream1")
   mp1.Write("stream1", Mock(1))
-  if v, ok := mp1.Dummy.queues["stream1"]; !ok || v.Len() != 1 || len(mp1.pending) != 1 {
+  if _, ok := mp1.Dummy["stream1"]; !ok || len(mp1.pending) != 1 {
     t.Error("Write failled")
   }
 }

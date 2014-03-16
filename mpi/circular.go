@@ -39,7 +39,6 @@ func (m *CircularMPI) Flush() {
   to_send := make(map[string]Versionable, len(m.pending))
   m.prepareData(to_send)
   err := m.sendData(to_send)
-  m.logger.Println(m.me, " flushing errors : ", err)
   if err == nil {
     // We will flush the data
     m.pending = make([]string, 0, len(m.locQueues))
@@ -58,17 +57,16 @@ func (m CircularMPI) sendData(to_send map[string]Versionable) error {
   }
   var network bytes.Buffer
   enc := gob.NewEncoder(&network) // Will write to network.
-  //  gob.Register(Mock(1))
   err := enc.Encode(to_send)
   if err != nil {
     return err
   }
   ur := strings.Join([]string{"http://", m.next}, "")
-  m.logger.Println(m.me, " Sending data ", to_send, " To : ", ur)
   _, err2 := http.PostForm(ur, url.Values{"data": {network.String()}})
   if err2 != nil {
     return err2
   }
+  m.logger.Println("Sending Data to", m.next)
   return nil
 }
 
@@ -103,13 +101,13 @@ func (m *CircularMPI) MessagesHandler(w http.ResponseWriter, r *http.Request) {
   dec := gob.NewDecoder(data)
   states := make(map[string]Versionable)
   err := dec.Decode(&states)
-  m.logger.Println(m.me, " Receiving data", states, " from", r.RemoteAddr)
   if err != nil {
     m.logger.Println(err)
   }
   m.cleanLocalStreams(states)
+  m.prepareData(states)
   if len(states) == 0 {
-    m.logger.Print(m.me, "  Nothing to send, done")
+    m.logger.Println("Nothing to send Going")
     return
   }
   // Ne need to clean local streams
@@ -118,9 +116,10 @@ func (m *CircularMPI) MessagesHandler(w http.ResponseWriter, r *http.Request) {
   }
   go m.sendData(states)
   w.Write([]byte{'O', 'K'})
+  m.logger.Println("receiving data from ", r.Host)
 }
 
-func NewCircularMPI(capacity int, me string, hosts []string, logger *log.Logger) *CircularMPI {
+func NewCircularMPI(me string, hosts []string, logger *log.Logger) *CircularMPI {
   nxt := ""
   prv := ""
   for i, v := range hosts {
@@ -134,7 +133,7 @@ func NewCircularMPI(capacity int, me string, hosts []string, logger *log.Logger)
     }
   }
   return &CircularMPI{
-    Dummy:     NewDummy(capacity),
+    Dummy:     NewDummy(),
     locQueues: make(map[string]int, len(hosts)),
     pending:   make([]string, 0, 10),
     hosts:     hosts,

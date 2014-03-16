@@ -41,6 +41,6 @@ func (m Dummy) ReadStates(versions map[string]int) map[string]Versionable {
   return data
 }
 
-func NewDummy(capacity int) (queue Dummy) {
+func NewDummy() (queue Dummy) {
   return Dummy(make(map[string]Versionable))
 }
