@@ -10,7 +10,10 @@ func SimpleWorker(queue mpi.MessagesQueue, cmpt Computable, tau int) {
   vc := make(map[string]int) // version control map
   for {
     select {
-    case data := <-cmpt.Input:
+    case data, ok := <-cmpt.Input:
+      if !ok {
+        return
+      }
       if i == 1 {
         for _, v := range queue.Queues() {
           vc[v] = 0
