@@ -41,7 +41,7 @@ func (m *CircularMPI) Flush() {
   err := m.sendData(to_send)
   if err == nil {
     // We will flush the data
-    m.pending = make([]string, 0, len(m.locQueues))
+    m.pending = make([]string, 0, 3*len(m.locQueues))
   }
 }
 func (m *CircularMPI) Write(s string, v Versionable) {
@@ -135,7 +135,7 @@ func NewCircularMPI(me string, hosts []string, logger *log.Logger) *CircularMPI 
   return &CircularMPI{
     Dummy:     NewDummy(),
     locQueues: make(map[string]int, len(hosts)),
-    pending:   make([]string, 0, 10),
+    pending:   make([]string, 0, 25),
     hosts:     hosts,
     next:      nxt,
     me:        me,
