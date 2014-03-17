@@ -34,8 +34,8 @@ func (m *CircularMPI) Register(s string) bool {
 }
 func (m *CircularMPI) Flush() {
   // we will flush the buffer if it's too long
-  m.mutex.Lock()
-  defer m.mutex.Unlock()
+  //m.mutex.Lock()
+  //defer m.mutex.Unlock()
   to_send := make(map[string]Versionable, len(m.pending))
   m.prepareData(to_send)
   err := m.sendData(to_send)
@@ -45,8 +45,8 @@ func (m *CircularMPI) Flush() {
   }
 }
 func (m *CircularMPI) Write(s string, v Versionable) {
-  m.mutex.Lock()
-  defer m.mutex.Unlock()
+  //m.mutex.Lock()
+  //defer m.mutex.Unlock()
   m.Dummy.Write(s, v)
   m.pending = append(m.pending, s)
 }
