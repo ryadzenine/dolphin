@@ -12,14 +12,14 @@ import (
 )
 
 type CircularMPI struct {
-  Dummy                    // the real data
-  locQueues map[string]int // The local queues
-  pending   []string       // Represent the pending writes
-  hosts     []string       // A liste of "ip:port" of the nodes involved in the ring
-  next      string         // "ip:port" of the next node in the ring
-  me        string         // "ip:port" of the current node
-  prev      string         // "ip:port" of the previous node in the ring
-  logger    *log.Logger    // To give logging capabilities to the CircularMPI
+  Dummy                     // the real data
+  locQueues map[string]int  // The local queues
+  pending   map[string]bool // Represent the pending writes
+  hosts     []string        // A liste of "ip:port" of the nodes involved in the ring
+  next      string          // "ip:port" of the next node in the ring
+  me        string          // "ip:port" of the current node
+  prev      string          // "ip:port" of the previous node in the ring
+  logger    *log.Logger     // To give logging capabilities to the CircularMPI
   mutex     *sync.Mutex
 }
 
@@ -28,6 +28,7 @@ func (m *CircularMPI) Register(s string) bool {
   if !ok {
     m.locQueues[s] = 1
     m.Dummy.Register(s)
+    m.pending[s] = false
     return true
   }
   return false
@@ -41,14 +42,12 @@ func (m *CircularMPI) Flush() {
   err := m.sendData(to_send)
   if err == nil {
     // We will flush the data
-    m.pending = make([]string, 0, 3*len(m.locQueues))
+    m.pending = make(map[string]bool)
   }
 }
 func (m *CircularMPI) Write(s string, v Versionable) {
-  //m.mutex.Lock()
-  //defer m.mutex.Unlock()
   m.Dummy.Write(s, v)
-  m.pending = append(m.pending, s)
+  m.pending[s] = true
 }
 
 func (m CircularMPI) sendData(to_send map[string]Versionable) error {
@@ -82,10 +81,12 @@ func (m CircularMPI) prepareData(to_send map[string]Versionable) {
   // we will populate the to_send variable
   // at every iteration we check if we haven't
   // already sent the previous variable
-  for _, v := range m.pending {
-    _, ok := to_send[v]
-    if !ok {
-      to_send[v] = m.ReadFirst(v)
+  for key, v := range m.pending {
+    if v {
+      _, ok := to_send[key]
+      if !ok {
+        to_send[key] = m.ReadFirst(key)
+      }
     }
   }
 }
@@ -135,7 +136,7 @@ func NewCircularMPI(me string, hosts []string, logger *log.Logger) *CircularMPI 
   return &CircularMPI{
     Dummy:     NewDummy(),
     locQueues: make(map[string]int, len(hosts)),
-    pending:   make([]string, 0, 25),
+    pending:   make(map[string]bool),
     hosts:     hosts,
     next:      nxt,
     me:        me,
