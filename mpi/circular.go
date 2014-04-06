@@ -99,26 +99,28 @@ func (m *CircularMPI) cleanLocalStreams(states map[string]Versionable) {
 	}
 }
 func (m *CircularMPI) MessagesHandler(w http.ResponseWriter, r *http.Request) {
-	data := strings.NewReader(r.FormValue("data"))
-	dec := gob.NewDecoder(data)
-	states := make(map[string]Versionable)
-	err := dec.Decode(&states)
-	if err != nil {
-		m.logger.Println(err)
-	}
-	m.cleanLocalStreams(states)
-	m.prepareData(states)
-	if len(states) == 0 {
-		m.logger.Println("Nothing to send Going")
-		return
-	}
-	// Ne need to clean local streams
-	for key, v := range states {
-		m.Dummy.Write(key, v)
-	}
-	go m.sendData(states)
 	w.Write([]byte{'O', 'K'})
-	m.logger.Println("receiving data from ", r.Host)
+	go func() {
+		data := strings.NewReader(r.FormValue("data"))
+		dec := gob.NewDecoder(data)
+		states := make(map[string]Versionable)
+		err := dec.Decode(&states)
+		if err != nil {
+			m.logger.Println(err)
+		}
+		m.cleanLocalStreams(states)
+		m.prepareData(states)
+		if len(states) == 0 {
+			m.logger.Println("Nothing to send Going")
+			return
+		}
+		// Ne need to clean local streams
+		for key, v := range states {
+			m.Dummy.Write(key, v)
+		}
+		m.logger.Println("receiving data from ", r.Host)
+		m.sendData(states)
+	}()
 }
 
 func NewCircularMPI(me string, hosts []string, logger *log.Logger) *CircularMPI {
