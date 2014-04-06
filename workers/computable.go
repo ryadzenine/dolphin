@@ -1,10 +1,10 @@
 package workers
 
 import (
-  "github.com/ryadzenine/dolphin/models"
-  "github.com/ryadzenine/dolphin/models/np"
-  "github.com/ryadzenine/dolphin/mpi"
-  "strconv"
+	"github.com/ryadzenine/dolphin/models"
+	"github.com/ryadzenine/dolphin/models/np"
+	"github.com/ryadzenine/dolphin/mpi"
+	"strconv"
 )
 
 // Represents a computable Work to be carried by a
@@ -12,10 +12,10 @@ import (
 // TODO : Change *np.RevezEstimator to an intreface
 // TODO : Figure out how to make it an interface
 type Computable struct {
-  Id    int
-  Name  string
-  Input chan models.SLPoint
-  Est   *np.RevezEstimator
+	Id    int
+	Name  string
+	Input chan models.SLPoint
+	Est   *np.RevezEstimator
 }
 
 // Builds a new Computable
@@ -24,12 +24,12 @@ type Computable struct {
 // points: The points to build the Estimator
 // smooth: The smoothing parameter of the kernel estimator
 func NewComputable(queue mpi.MessagesQueue, id int,
-  points []models.Point, smooth float64) Computable {
+	points []models.Point, smooth float64) Computable {
 
-  worker_name := string(strconv.AppendInt([]byte("Worker "), int64(id), 10))
-  ch := make(chan models.SLPoint)
-  est, _ := np.NewRevezEstimator(points, smooth)
-  queue.Register(worker_name)
-  queue.Write(worker_name, est.State())
-  return Computable{id, worker_name, ch, est}
+	worker_name := string(strconv.AppendInt([]byte("Worker "), int64(id), 10))
+	ch := make(chan models.SLPoint)
+	est, _ := np.NewRevezEstimator(points, smooth)
+	queue.Register(worker_name)
+	queue.Write(worker_name, est.State())
+	return Computable{id, worker_name, ch, est}
 }
