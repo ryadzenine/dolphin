@@ -24,12 +24,12 @@ type Computable struct {
 // points: The points to build the Estimator
 // smooth: The smoothing parameter of the kernel estimator
 func NewComputable(queue mpi.MessagesQueue, id int,
-	points []models.Point, smooth float64) Computable {
+	points []models.Point, smooth float64) *Computable {
 
 	worker_name := string(strconv.AppendInt([]byte("Worker "), int64(id), 10))
 	ch := make(chan models.SLPoint)
 	est, _ := np.NewRevezEstimator(points, smooth)
 	queue.Register(worker_name)
 	queue.Write(worker_name, est.State())
-	return Computable{id, worker_name, ch, est}
+	return &Computable{id, worker_name, ch, est}
 }

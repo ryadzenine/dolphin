@@ -33,6 +33,7 @@ func (m *CircularMPI) Register(s string) bool {
 	}
 	return false
 }
+
 func (m *CircularMPI) Flush() error {
 	// we will flush the buffer if it's too long
 	//m.mutex.Lock()

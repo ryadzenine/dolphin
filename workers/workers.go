@@ -5,7 +5,7 @@ import (
 	"github.com/ryadzenine/dolphin/mpi"
 )
 
-func SimpleWorker(queue mpi.MessagesQueue, cmpt Computable, tau int) {
+func SimpleWorker(queue mpi.MessagesQueue, cmpt *Computable, tau int) {
 	i := 1
 	vc := make(map[string]int) // version control map
 	for {
