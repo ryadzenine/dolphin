@@ -110,3 +110,21 @@ func TestSendReceiveData(t *testing.T) {
 	}
 
 }
+func TestEmptyFlush(t *testing.T) {
+	mp1 := buildMP(0)
+	mp1.Register("stream1")
+	mp2 := buildMP(1)
+	mp2.Register("stream2")
+	mp3 := buildMP(2)
+	mp3.Register("stream0")
+	s1 := http.NewServeMux()
+	s1.HandleFunc("/", mp1.MessagesHandler)
+	go http.ListenAndServe(mp1.me, s1)
+	s2 := http.NewServeMux()
+	s2.HandleFunc("/", mp2.MessagesHandler)
+	go http.ListenAndServe(mp2.me, s2)
+	s3 := http.NewServeMux()
+	s3.HandleFunc("/", mp3.MessagesHandler)
+	go http.ListenAndServe(mp3.me, s3)
+	mp1.Flush()
+}

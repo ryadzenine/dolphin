@@ -102,12 +102,14 @@ func (m *CircularMPI) cleanLocalStreams(states map[string]Versionable) {
 func (m *CircularMPI) MessagesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{'O', 'K'})
 	go func() {
-		data := strings.NewReader(r.FormValue("data"))
-		dec := gob.NewDecoder(data)
 		states := make(map[string]Versionable)
-		err := dec.Decode(&states)
-		if err != nil {
-			m.logger.Println(err)
+		if r.FormValue("data") != "" {
+			data := strings.NewReader(r.FormValue("data"))
+			dec := gob.NewDecoder(data)
+			err := dec.Decode(&states)
+			if err != nil {
+				m.logger.Println(err)
+			}
 		}
 		m.cleanLocalStreams(states)
 		m.prepareData(states)
