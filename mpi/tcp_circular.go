@@ -3,6 +3,7 @@ package mpi
 import (
 	"bytes"
 	"errors"
+	"io/ioutil"
 	"log"
 	"net"
 	"sync"
@@ -10,7 +11,6 @@ import (
 
 type CircularMPI struct {
 	BaseCircularMPI
-	mesSize  int
 	connType string
 }
 
@@ -51,16 +51,17 @@ func (m CircularMPI) sendData(to_send map[string]Versionable) error {
 	return nil
 }
 func (m *CircularMPI) ListenAndServe() {
-	l, err := net.Listen(m.connType, m.me)
+	ln, err := net.Listen(m.connType, m.me)
 	if err != nil {
 		m.logger.Fatal("Error listening:", err.Error())
 		return
 	}
 	// Close the listener when the application closes.
-	defer l.Close()
+	defer ln.Close()
 	for {
 		// Listen for an incoming connection.
-		conn, err := l.Accept()
+		conn, err := ln.Accept()
+
 		if err != nil {
 			m.logger.Println("Error accepting: ", err.Error())
 		}
@@ -70,14 +71,12 @@ func (m *CircularMPI) ListenAndServe() {
 }
 func (m *CircularMPI) MessagesHandler(conn net.Conn) {
 	defer conn.Close()
-	buf := make([]byte, m.mesSize)
-	n, err := conn.Read(buf)
+	buf, err := ioutil.ReadAll(conn)
 	if err != nil {
 		m.logger.Println(err)
 		conn.Write([]byte{'N', 'O'})
 		return
 	}
-	m.mesSize = n
 	conn.Write([]byte{'O', 'K'})
 
 	go func() {
@@ -88,6 +87,7 @@ func (m *CircularMPI) MessagesHandler(conn net.Conn) {
 			m.logger.Println(err)
 		}
 		states = st
+		m.logger.Println(m.me, " Received ")
 		m.cleanLocalStreams(states)
 		m.prepareData(states)
 		if len(states) == 0 {
@@ -114,5 +114,5 @@ func NewCircularMPI(conn string, me string, hosts []string, logger *log.Logger) 
 		me:        me,
 		prev:      prv,
 		logger:    logger,
-		mutex:     new(sync.Mutex)}, 1024, conn}
+		mutex:     new(sync.Mutex)}, conn}
 }

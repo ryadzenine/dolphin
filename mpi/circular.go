@@ -36,6 +36,9 @@ func (m *BaseCircularMPI) Write(s string, v Versionable) {
 func (m BaseCircularMPI) prepareData(to_send map[string]Versionable) {
 	// First we will clean the data to send from all the
 	// local data
+	if to_send == nil {
+		to_send = make(map[string]Versionable)
+	}
 	for queue, _ := range m.locQueues {
 		_, ok := to_send[queue]
 		if ok {

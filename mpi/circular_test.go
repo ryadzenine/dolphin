@@ -96,8 +96,8 @@ func TestSendReceiveData(t *testing.T) {
 	mp1.Write("stream1", Mock(1))
 	mp1.Register("stream4")
 	mp1.Write("stream4", Mock(4))
-	mp2.Flush()
 	<-time.After(100 * time.Millisecond)
+	mp1.Flush()
 	if len(mp1.pending) != 0 {
 		t.Error("pending should be cleared after a send")
 	}
