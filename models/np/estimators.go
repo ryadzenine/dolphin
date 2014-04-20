@@ -90,7 +90,7 @@ func NewRevezEstimator(points []models.Point, smooth float64) (*RevezEstimator, 
 		Points:    points,
 		state:     make([]float64, len(points)),
 		Step:      0,
-		Rate:      func(i int) float64 { return 1.0 / math.Sqrt(float64(i)) },
+		Rate:      func(i int) float64 { return 1.0 / float64(i) },
 		Smoothing: func(i int) float64 { return smooth },
 		Kernel:    GaussianKernel}
 	return &e, nil
