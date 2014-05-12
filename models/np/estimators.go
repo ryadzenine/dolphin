@@ -85,13 +85,13 @@ func (r RevezEstimator) State() models.State {
 	return EstimatorState{Points: r.Points, State: r.state, version: r.Step}
 }
 
-func NewRevezEstimator(points []models.Point, smooth float64) (*RevezEstimator, error) {
+func NewRevezEstimator(points []models.Point) (*RevezEstimator, error) {
 	e := RevezEstimator{
 		Points:    points,
 		state:     make([]float64, len(points)),
 		Step:      0,
 		Rate:      func(i int) float64 { return 1.0 / float64(i) },
-		Smoothing: func(i int) float64 { return smooth },
+		Smoothing: func(t int) float64 { return (1 / math.Log(float64(t))) * math.Pow(float64(t), -0.2) },
 		Kernel:    GaussianKernel}
 	return &e, nil
 }
