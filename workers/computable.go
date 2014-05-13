@@ -1,10 +1,11 @@
 package workers
 
 import (
+	"strconv"
+
 	"github.com/ryadzenine/dolphin/models"
 	"github.com/ryadzenine/dolphin/models/np"
 	"github.com/ryadzenine/dolphin/mpi"
-	"strconv"
 )
 
 // Represents a computable Work to be carried by a
@@ -12,10 +13,11 @@ import (
 // TODO : Change *np.RevezEstimator to an intreface
 // TODO : Figure out how to make it an interface
 type Computable struct {
-	Id    int
+	Id    int // TODO change Id to ID as lint says
 	Name  string
 	Input chan models.SLPoint
-	Est   *np.RevezEstimator
+	// TODO Change to Regression Estimator
+	Est *np.RevezEstimator
 }
 
 // Builds a new Computable
@@ -26,7 +28,7 @@ type Computable struct {
 func NewComputable(queue mpi.MessagesQueue, id int,
 	points []models.Point) *Computable {
 
-	worker_name := string(strconv.AppendInt([]byte("Worker "), int64(id), 10))
+	workerName := string(strconv.AppendInt([]byte("Worker "), int64(id), 10))
 	ch := make(chan models.SLPoint)
 	est, _ := np.NewRevezEstimator(points)
 	queue.Register(workerName)

@@ -20,7 +20,7 @@ func SimpleWorker(queue mpi.MessagesQueue, cmpt *Computable, tau int) {
 				}
 			}
 			// ici on va faire des computations
-			if i%tau == 0 {
+			if i%tau == 0 && tau != 1 {
 				stat := queue.ReadStates(vc)
 				// Block of code just to covert to the good types
 				states := make([]models.State, 0, len(stat))

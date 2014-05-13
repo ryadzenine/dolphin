@@ -70,14 +70,14 @@ func TestPrepareData(t *testing.T) {
 	mp1 := buildMP(1)
 	mp1.Register("stream1")
 	mp1.Write("stream1", Mock(3))
-	to_send := map[string]Versionable{
+	toSend := map[string]Versionable{
 		"stream":  Mock(2),
 		"stream1": Mock(1)}
-	mp1.prepareData(to_send)
-	if v, ok := to_send["stream"]; !ok || v.Version() != 2 {
+	mp1.prepareData(toSend)
+	if v, ok := toSend["stream"]; !ok || v.Version() != 2 {
 		t.Error("Function prepare data, deletes data the it should not, check it")
 	}
-	if v, ok := to_send["stream1"]; !ok || v.Version() != 3 {
+	if v, ok := toSend["stream1"]; !ok || v.Version() != 3 {
 		t.Error("Function prepareData, doesn't update data with pending as it's supposed to.")
 	}
 }

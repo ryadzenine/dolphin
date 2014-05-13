@@ -6,10 +6,10 @@ import (
 	"io"
 )
 
-func encodeData(to_send map[string]Versionable) (*bytes.Buffer, error) {
+func encodeData(toSend map[string]Versionable) (*bytes.Buffer, error) {
 	var network bytes.Buffer
 	enc := gob.NewEncoder(&network) // Will write to network.
-	err := enc.Encode(to_send)
+	err := enc.Encode(toSend)
 	if err != nil {
 		return nil, err
 	}

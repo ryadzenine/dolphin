@@ -72,8 +72,8 @@ func (r *RevezEstimator) ComputeDistributedStep(convexPart []float64, l models.S
 		for i, v := range l.X {
 			tmp[i] = (point[i] - v) / ht
 		}
-		tmp_ker := r.Kernel(tmp) / ht
-		r.state[j] = convexPart[j] - r.Rate(r.Step)*(tmp_ker*r.state[j]-l.Y*tmp_ker)
+		tmpKer := r.Kernel(tmp) / ht
+		r.state[j] = convexPart[j] - r.Rate(r.Step)*(tmpKer*r.state[j]-l.Y*tmpKer)
 	}
 }
 

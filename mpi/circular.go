@@ -33,26 +33,26 @@ func (m *BaseCircularMPI) Write(s string, v Versionable) {
 	m.pending[s] = true
 }
 
-func (m BaseCircularMPI) prepareData(to_send map[string]Versionable) {
+func (m BaseCircularMPI) prepareData(toSend map[string]Versionable) {
 	// First we will clean the data to send from all the
 	// local data
-	if to_send == nil {
-		to_send = make(map[string]Versionable)
+	if toSend == nil {
+		toSend = make(map[string]Versionable)
 	}
-	for queue, _ := range m.locQueues {
-		_, ok := to_send[queue]
+	for queue := range m.locQueues {
+		_, ok := toSend[queue]
 		if ok {
-			delete(to_send, queue)
+			delete(toSend, queue)
 		}
 	}
-	// we will populate the to_send variable
+	// we will populate the toSend variable
 	// at every iteration we check if we haven't
 	// already sent the previous variable
 	for key, v := range m.pending {
 		if v {
-			_, ok := to_send[key]
+			_, ok := toSend[key]
 			if !ok {
-				to_send[key] = m.ReadFirst(key)
+				toSend[key] = m.ReadFirst(key)
 			}
 		}
 	}

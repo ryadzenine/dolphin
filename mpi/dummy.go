@@ -4,7 +4,7 @@ type Dummy map[string]Versionable
 
 func (m Dummy) Queues() []string {
 	names := make([]string, 0, len(m))
-	for key, _ := range m {
+	for key := range m {
 		names = append(names, key)
 	}
 	return names
