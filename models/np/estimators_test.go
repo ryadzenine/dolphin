@@ -1,15 +1,16 @@
 package np
 
 import (
-	"github.com/ryadzenine/dolphin/models"
 	"testing"
+
+	"github.com/ryadzenine/dolphin/models"
 )
 
 func TestRevezEstimatorPredict(t *testing.T) {
 	// first we setup a face revez estimator with two
 	// points
 	points := []models.Point{models.Point{0}, models.Point{0.5}}
-	r, _ := NewRevezEstimator(points, 0.5)
+	r, _ := NewRevezEstimator(points)
 	r.state = []float64{0, 1}
 	res, _ := r.Predict(models.Point{0.2})
 	if res != 0 {
@@ -19,7 +20,7 @@ func TestRevezEstimatorPredict(t *testing.T) {
 
 func TestRevezEstimatorL2Error(t *testing.T) {
 	points := []models.Point{models.Point{0}, models.Point{0.5}}
-	r, _ := NewRevezEstimator(points, 0.5)
+	r, _ := NewRevezEstimator(points)
 	r.state = []float64{0, 1}
 	res := r.L2Error([]models.SLPoint{
 		models.SLPoint{X: models.Point{0.2}, Y: 1}})
@@ -30,7 +31,7 @@ func TestRevezEstimatorL2Error(t *testing.T) {
 
 func TestRevezEstimatorComputeDistributedStep(t *testing.T) {
 	points := []models.Point{models.Point{0}, models.Point{0.5}}
-	r, _ := NewRevezEstimator(points, 0.5)
+	r, _ := NewRevezEstimator(points)
 	r.state = []float64{0, 1}
 	r.ComputeDistributedStep(
 		[]float64{0.25, 0.75},
