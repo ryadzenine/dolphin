@@ -31,13 +31,12 @@ func SimpleWorker(queue mpi.MessagesQueue, cmpt *Computable, tau int) {
 				for key, v := range stat {
 					vc[key] = v.Version()
 				}
-				acc := make([]float64, len(cmpt.Est.Points))
 				if len(states) != 0 {
-					acc = models.States(states).ComputeAgregation()
+					acc := models.States(states).Average()
+					cmpt.Est.Average(acc, data)
 				}
-				cmpt.Est.ComputeDistributedStep(acc, data)
 			} else {
-				cmpt.Est.ComputeStep(data)
+				cmpt.Est.Compute(data)
 			}
 			queue.Write(cmpt.Name, cmpt.Est.State())
 			i = i + 1

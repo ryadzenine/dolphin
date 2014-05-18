@@ -29,15 +29,15 @@ func TestRevezEstimatorL2Error(t *testing.T) {
 	}
 }
 
-func TestRevezEstimatorComputeDistributedStep(t *testing.T) {
+func TestRevezEstimatorAverage(t *testing.T) {
 	points := []models.Point{models.Point{0}, models.Point{0.5}}
 	r, _ := NewRevezEstimator(points)
 	r.state = []float64{0, 1}
-	r.ComputeDistributedStep(
+	r.Average(
 		[]float64{0.25, 0.75},
 		models.SLPoint{X: models.Point{0.25}, Y: 0.3})
 }
-func TestComputeAgregation(t *testing.T) {
+func TestAverage(t *testing.T) {
 	st := EstimatorState{
 		Points: []models.Point{
 			models.Point{1, 0},
@@ -63,7 +63,7 @@ func TestComputeAgregation(t *testing.T) {
 		version: 1,
 	}
 	states := models.States{st, st1, st3}
-	r := states.ComputeAgregation()
+	r := states.Average()
 	if r[0] != 1 || r[1] != 2.0 {
 		t.Error("Compute agregation failled", r)
 	}

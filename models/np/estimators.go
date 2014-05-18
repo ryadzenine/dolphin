@@ -20,13 +20,6 @@ func (r EstimatorState) Version() int {
 	return r.version
 }
 
-type RegressionEstimator interface {
-	Predict(models.Point) (float64, error)
-	ComputeDistributedStep([]float64, models.SLPoint)
-	ComputeStep(models.SLPoint)
-	State() models.State
-}
-
 type RevezEstimator struct {
 	Points    []models.Point
 	state     []float64
@@ -34,6 +27,10 @@ type RevezEstimator struct {
 	Rate      func(int) float64
 	Smoothing func(int) float64
 	Kernel    func(models.Point) float64
+}
+
+func (r *RevezEstimator) Error(testData []models.SLPoint) float64 {
+	return r.FastL2Error(testData)
 }
 
 // Fast L2 Error: is only to use when we are sure that the points are aligned
@@ -64,7 +61,7 @@ func (r *RevezEstimator) Predict(p models.Point) (float64, error) {
 	return 0, errors.New("the point is outside the learning domain")
 }
 
-func (r *RevezEstimator) ComputeDistributedStep(convexPart []float64, l models.SLPoint) {
+func (r *RevezEstimator) Average(convexPart []float64, l models.SLPoint) {
 	r.Step++
 	ht := r.Smoothing(r.Step)
 	for j, point := range r.Points {
@@ -77,8 +74,8 @@ func (r *RevezEstimator) ComputeDistributedStep(convexPart []float64, l models.S
 	}
 }
 
-func (r *RevezEstimator) ComputeStep(p models.SLPoint) {
-	r.ComputeDistributedStep(r.state, p)
+func (r *RevezEstimator) Compute(p models.SLPoint) {
+	r.Average(r.state, p)
 }
 
 func (r RevezEstimator) State() models.State {
