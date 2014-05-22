@@ -25,12 +25,18 @@ type Computable struct {
 // points: The points to build the Estimator
 // smooth: The smoothing parameter of the kernel estimator
 func NewComputable(queue mpi.MessagesQueue, id int,
-	points []models.Point,
 	est models.Estimate) *Computable {
-
 	workerName := string(strconv.AppendInt([]byte("Worker "), int64(id), 10))
 	ch := make(chan models.SLPoint)
 	queue.Register(workerName)
 	queue.Write(workerName, est.State())
 	return &Computable{id, workerName, ch, est}
+}
+
+type MultiPassComputable struct {
+	Id    int // TODO change Id to ID as lint says
+	Name  string
+	Input chan int
+	// TODO Change to Regression Estimator
+	Est models.DistributedSGD
 }
