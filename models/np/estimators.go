@@ -8,7 +8,7 @@ import (
 )
 
 type EstimatorState struct {
-	Points  []models.Point
+	Vectors []models.Vector
 	State   []float64
 	version int
 }
@@ -21,12 +21,12 @@ func (r EstimatorState) Version() int {
 }
 
 type RevezEstimator struct {
-	Points    []models.Point
+	Vectors   []models.Vector
 	state     []float64
 	Step      int
 	Rate      func(int) float64
 	Smoothing func(int) float64
-	Kernel    func(models.Point) float64
+	Kernel    func(models.Vector) float64
 }
 
 func (r *RevezEstimator) Error(testData []models.SLPoint) float64 {
@@ -51,10 +51,10 @@ func (r *RevezEstimator) L2Error(testData []models.SLPoint) float64 {
 	}
 	return math.Sqrt(err) / float64(len(testData))
 }
-func (r *RevezEstimator) Predict(p models.Point) (float64, error) {
+func (r *RevezEstimator) Predict(p models.Vector) (float64, error) {
 	// first we seek the closest point
-	for i, pt := range r.Points {
-		if l1Norm(pt, p) == 0 {
+	for i, pt := range r.Vectors {
+		if models.L1Norm(pt, p) == 0 {
 			return r.state[i], nil
 		}
 	}
@@ -64,7 +64,7 @@ func (r *RevezEstimator) Predict(p models.Point) (float64, error) {
 func (r *RevezEstimator) Average(convexPart []float64, l models.SLPoint) {
 	r.Step++
 	ht := r.Smoothing(r.Step)
-	for j, point := range r.Points {
+	for j, point := range r.Vectors {
 		tmp := make([]float64, len(l.X))
 		for i, v := range l.X {
 			tmp[i] = (point[i] - v) / ht
@@ -79,16 +79,16 @@ func (r *RevezEstimator) Compute(p models.SLPoint) {
 }
 
 func (r RevezEstimator) State() models.State {
-	return EstimatorState{Points: r.Points, State: r.state, version: r.Step}
+	return EstimatorState{Vectors: r.Vectors, State: r.state, version: r.Step}
 }
 
-func NewRevezEstimator(points []models.Point) (*RevezEstimator, error) {
+func NewRevezEstimator(points []models.Vector) (*RevezEstimator, error) {
 	e := RevezEstimator{
-		Points:    points,
+		Vectors:   points,
 		state:     make([]float64, len(points)),
 		Step:      0,
 		Rate:      func(i int) float64 { return 1.0 / float64(i) },
 		Smoothing: func(t int) float64 { return (1 / math.Log(float64(t))) * math.Pow(float64(t), -0.2) },
-		Kernel:    GaussianKernel}
+		Kernel:    models.GaussianKernel}
 	return &e, nil
 }

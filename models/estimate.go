@@ -16,11 +16,11 @@ type Estimate interface {
 }
 type RegressionEstimate interface {
 	Estimate
-	Predict(Point) (float64, error)
+	Predict(Vector) (float64, error)
 }
 type ClassificationEstimate interface {
 	Estimate
-	Predict(Point) (int, error)
+	Predict(Vector) (int, error)
 }
 
 type State interface {

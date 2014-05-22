@@ -7,6 +7,31 @@ import (
 	"strings"
 )
 
+func L2Norm(v Vector) float64 {
+	var res float64
+	for _, val := range v {
+		res = res + val*val
+	}
+	return math.Sqrt(res)
+}
+func L22Norm(v, u Vector) float64 {
+	var res float64
+	for key, val := range v {
+		res = res + math.Pow(val-u[key], 2)
+	}
+	return math.Sqrt(res)
+}
+func L1Norm(x Vector, y Vector) float64 {
+	if len(x) > len(y) {
+		return -1
+	}
+	var res float64
+	for i, val := range x {
+		res = res + math.Abs(val-y[i])
+	}
+	return res
+}
+
 func ParseLearningPoint(s string) SLPoint {
 	sl := strings.Split(s, ";")
 	fl := make([]float64, cap(sl))
@@ -20,20 +45,20 @@ func ParseLearningPoint(s string) SLPoint {
 // buildMeshCoordinate will build all the values that the coordinats of the
 // meshing will take
 func buildMeshCoordinate(inf, sup, step float64) []float64 {
-	nbPoints := int(math.Ceil(sup - inf/float64(step)))
-	coordinates := make([]float64, 0, nbPoints+1)
+	nbVectors := int(math.Ceil(sup - inf/float64(step)))
+	coordinates := make([]float64, 0, nbVectors+1)
 	// Dans un premier temps on construit les coordonées de la discrétisation
 	for j := inf + float64(step)/2; j < sup; j = j + float64(step) {
 		coordinates = append(coordinates, j)
 	}
 	return coordinates
 }
-func buildPoint(track []int, coordinates []float64) Point {
+func buildVector(track []int, coordinates []float64) Vector {
 	pt := make([]float64, 0, len(track))
 	for _, v := range track {
 		pt = append(pt, coordinates[v])
 	}
-	return Point(pt)
+	return Vector(pt)
 }
 func incTrack(track []int, d int) ([]int, bool) {
 	acc := 1
@@ -58,7 +83,7 @@ func incTrack(track []int, d int) ([]int, bool) {
 // This function will build a meshing of the compact [ @inf , @sup ]^@d
 // such that the euclidian distance between two points of the mesh is less
 // then @step
-func MeshEvalPoints(inf, sup, step float64, d int) ([]Point, error) {
+func MeshEvalVectors(inf, sup, step float64, d int) ([]Vector, error) {
 	if inf >= sup {
 		return nil, errors.New("inf should be strictly smaller than sup")
 	}
@@ -66,15 +91,15 @@ func MeshEvalPoints(inf, sup, step float64, d int) ([]Point, error) {
 		return nil, errors.New("sup - inf should be strictly greater than step")
 	}
 	//
-	nbPoints := int(math.Ceil(sup - inf/step))
-	points := make([]Point, 0, (nbPoints+1)*d)
+	nbVectors := int(math.Ceil(sup - inf/step))
+	points := make([]Vector, 0, (nbVectors+1)*d)
 	// on va se servir de ce tableau pour construire
 	coordinates := buildMeshCoordinate(inf, sup, step)
 	track := make([]int, d)
 	ok := true
 	for ok {
 		// on rajoute le point
-		points = append(points, buildPoint(track, coordinates))
+		points = append(points, buildVector(track, coordinates))
 		track, ok = incTrack(track, len(coordinates))
 	}
 	return points, nil
