@@ -8,7 +8,6 @@ import (
 )
 
 type EstimatorState struct {
-	Vectors []models.Vector
 	State   []float64
 	version int
 }
@@ -79,7 +78,7 @@ func (r *RevezEstimator) Compute(p models.SLPoint) {
 }
 
 func (r RevezEstimator) State() models.State {
-	return EstimatorState{Vectors: r.Vectors, State: r.state, version: r.Step}
+	return EstimatorState{State: r.state, version: r.Step}
 }
 
 func NewRevezEstimator(points []models.Vector) (*RevezEstimator, error) {
