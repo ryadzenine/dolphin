@@ -9,7 +9,6 @@ import (
 
 // Represents a computable Work to be carried by a
 // Worker
-// TODO : Change *np.RevezEstimator to an intreface
 // TODO : Figure out how to make it an interface
 type Computable struct {
 	Id    int // TODO change Id to ID as lint says
@@ -31,12 +30,4 @@ func NewComputable(queue mpi.MessagesQueue, id int,
 	queue.Register(workerName)
 	queue.Write(workerName, est.State())
 	return &Computable{id, workerName, ch, est}
-}
-
-type MultiPassComputable struct {
-	Id    int // TODO change Id to ID as lint says
-	Name  string
-	Input chan int
-	// TODO Change to Regression Estimator
-	Est models.DistributedSGD
 }
