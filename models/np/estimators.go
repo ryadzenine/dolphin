@@ -68,7 +68,7 @@ func (r *RevezEstimator) Average(convexPart []float64, l models.SLPoint) {
 		for i, v := range l.X {
 			tmp[i] = (point[i] - v) / ht
 		}
-		tmpKer := r.Kernel(tmp) / math.Pow(ht, len(l.X))
+		tmpKer := r.Kernel(tmp) / math.Pow(ht, float64(len(l.X)))
 		r.state[j] = convexPart[j] - r.Rate(r.Step)*(tmpKer*r.state[j]-l.Y*tmpKer)
 	}
 }
@@ -88,7 +88,7 @@ func NewRevezEstimator(points []models.Vector) (*RevezEstimator, error) {
 		state:     make([]float64, len(points)),
 		Step:      0,
 		Rate:      func(i int) float64 { return 1.0 / float64(i) },
-		Smoothing: func(t int) float64 { return math.Pow(t, -1/(dim+2)) },
+		Smoothing: func(t int) float64 { return math.Pow(float64(t), -1./float64(dim+2)) },
 		Kernel:    models.GaussianKernel}
 	return &e, nil
 }

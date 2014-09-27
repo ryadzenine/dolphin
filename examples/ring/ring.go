@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	exutils "github.com/ryadzenine/dolphin-examples/utils"
+	exutils "github.com/ryadzenine/dolphin/examples/utils"
 	"github.com/ryadzenine/dolphin/models"
 	"github.com/ryadzenine/dolphin/models/np"
 	"github.com/ryadzenine/dolphin/mpi"

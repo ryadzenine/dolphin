@@ -22,11 +22,3 @@ func TestBuildMeshCoordinate(t *testing.T) {
 		t.Error("the lenght of the build coordinates for parameters ", 0, 1, 0.25, coo)
 	}
 }
-func TestMeshEvalPoints(t *testing.T) {
-	points, _ := MeshEvalPoints(0, 1, 0.5, 2)
-	if len(points) != 4 {
-		t.Error("Build Partition not working for inf:  , sup: , step:  , d: ",
-			points, 0, 1, 0.5, 2)
-	}
-
-}
