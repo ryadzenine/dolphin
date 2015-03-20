@@ -28,16 +28,16 @@ func (m *BaseCircularMPI) Register(s string) bool {
 	return false
 }
 
-func (m *BaseCircularMPI) Write(s string, v Versionable) {
+func (m *BaseCircularMPI) Write(s string, v Versioner) {
 	m.Dummy.Write(s, v)
 	m.pending[s] = true
 }
 
-func (m BaseCircularMPI) prepareData(toSend map[string]Versionable) {
+func (m BaseCircularMPI) prepareData(toSend map[string]Versioner) {
 	// First we will clean the data to send from all the
 	// local data
 	if toSend == nil {
-		toSend = make(map[string]Versionable)
+		toSend = make(map[string]Versioner)
 	}
 	for queue := range m.locQueues {
 		_, ok := toSend[queue]
@@ -58,7 +58,7 @@ func (m BaseCircularMPI) prepareData(toSend map[string]Versionable) {
 	}
 }
 
-func (m *BaseCircularMPI) cleanLocalStreams(states map[string]Versionable) {
+func (m *BaseCircularMPI) cleanLocalStreams(states map[string]Versioner) {
 	for k := range m.locQueues {
 		if _, ok := states[k]; ok {
 			delete(states, k)

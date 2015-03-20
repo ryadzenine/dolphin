@@ -70,7 +70,7 @@ func TestPrepareData(t *testing.T) {
 	mp1 := buildMP(1)
 	mp1.Register("stream1")
 	mp1.Write("stream1", Mock(3))
-	toSend := map[string]Versionable{
+	toSend := map[string]Versioner{
 		"stream":  Mock(2),
 		"stream1": Mock(1)}
 	mp1.prepareData(toSend)

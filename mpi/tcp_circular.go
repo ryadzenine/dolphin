@@ -15,7 +15,7 @@ type CircularMPI struct {
 	connType string
 }
 
-func (m CircularMPI) sendData(toSend map[string]Versionable) error {
+func (m CircularMPI) sendData(toSend map[string]Versioner) error {
 	if len(toSend) == 0 {
 		return errors.New("no data to send")
 	}
@@ -42,7 +42,7 @@ func (m *CircularMPI) Flush() error {
 	// we will flush the buffer if it's too long
 	//m.mutex.Lock()
 	//defer m.mutex.Unlock()
-	toSend := make(map[string]Versionable, len(m.pending))
+	toSend := make(map[string]Versioner, len(m.pending))
 	m.prepareData(toSend)
 	err := m.sendData(toSend)
 	if err == nil {
@@ -63,7 +63,7 @@ func (m *CircularMPI) handleMessage(conn io.ReadWriteCloser) {
 	conn.Write([]byte{'O', 'K'})
 
 	go func() {
-		states := make(map[string]Versionable)
+		states := make(map[string]Versioner)
 		data := bytes.NewBuffer(buf)
 		st, err := decodeData(data)
 		if err != nil {

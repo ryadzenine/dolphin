@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-func encodeData(toSend map[string]Versionable) (*bytes.Buffer, error) {
+func encodeData(toSend map[string]Versioner) (*bytes.Buffer, error) {
 	var network bytes.Buffer
 	enc := gob.NewEncoder(&network) // Will write to network.
 	err := enc.Encode(toSend)
@@ -16,7 +16,7 @@ func encodeData(toSend map[string]Versionable) (*bytes.Buffer, error) {
 	return &network, nil
 }
 
-func decodeData(data io.Reader) (states map[string]Versionable, err error) {
+func decodeData(data io.Reader) (states map[string]Versioner, err error) {
 	dec := gob.NewDecoder(data)
 	err = dec.Decode(&states)
 	if err != nil {

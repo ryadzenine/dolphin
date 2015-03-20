@@ -24,7 +24,7 @@ type ClassificationEstimate interface {
 }
 
 type State interface {
-	mpi.Versionable
+	mpi.Versioner
 	Values() []float64
 }
 
